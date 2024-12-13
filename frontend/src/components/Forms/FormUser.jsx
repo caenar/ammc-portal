@@ -24,11 +24,15 @@ export const FormUser = ({
   const [selectedGender, setSelectedGender] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [selectedYearLevel, setSelectedYearLevel] = useState(null);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [selectedCourses, setSelectedCourses] = useState([]);
+
   const [preview, setPreview] = useState(null);
   const [editedName, setEditedName] = useState(null);
   const [editedEmail, setEditedEmail] = useState(null);
 
   const { data: programs } = useFetchData("program");
+  const { data: courses } = useFetchData("course");
 
   const {
     register,
@@ -36,6 +40,17 @@ export const FormUser = ({
     setValue,
     formState: { errors },
   } = useForm();
+
+  const courseOptions = useMemo(() => {
+    return courses.map((c) => {
+      const label = c.description;
+
+      return {
+        value: c._id,
+        label,
+      };
+    });
+  }, [courses]);
 
   const programOptions = useMemo(() => {
     return programs.map((p) => {
@@ -68,7 +83,7 @@ export const FormUser = ({
     }
   }, [setValue, type, userData]);
 
-  const onCreateSubmit = async (data) => {
+  const onSubmit = async (data) => {
     let firstAndMiddleName = "";
     let lastName = "";
 
@@ -81,12 +96,24 @@ export const FormUser = ({
     let userData = {
       ...data,
       gender: selectedGender?.value,
-      programId: selectedProgram?.value,
-      yearLevel: selectedYearLevel?.value,
-      birthDate: !selectedDate ? data.birthDate : selectedDate.toString(),
       firstName: !editedName ? startCase(data.firstName) : firstAndMiddleName,
       lastName: !editedName ? startCase(data.lastName) : lastName,
+      birthDate: !selectedDate ? data.birthDate : selectedDate.toString(),
     };
+
+    if (role === "student") {
+      userData = {
+        ...userData,
+        programId: selectedProgram?.value,
+        yearLevel: selectedYearLevel?.value,
+      };
+    } else if (role === "instructor") {
+      userData = {
+        ...userData,
+        courses: selectedCourses.map((c) => c.value),
+        department: selectedDepartment?.value,
+      };
+    }
 
     if (type === "edit") {
       userData = {
@@ -129,7 +156,7 @@ export const FormUser = ({
   );
 
   return (
-    <form className={styles.formContainer} onSubmit={handleSubmit(onCreateSubmit)}>
+    <form className={styles.formContainer} onSubmit={handleSubmit(onSubmit)}>
       {type === "register" ? (
         <RegisterForm
           role={role}
@@ -138,6 +165,7 @@ export const FormUser = ({
           userData={userData}
           programOptions={programOptions}
           yearOptions={yearOptions}
+          courseOptions={courseOptions}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           selectedGender={selectedGender}
@@ -148,6 +176,10 @@ export const FormUser = ({
           setSelectedProgram={setSelectedProgram}
           selectedYearLevel={selectedYearLevel}
           setSelectedYearLevel={setSelectedYearLevel}
+          setSelectedCourses={setSelectedCourses}
+          selectedCourses={selectedCourses}
+          setSelectedDepartment={setSelectedDepartment}
+          selectedDepartment={selectedDepartment}
         />
       ) : (
         <EditForm
@@ -157,6 +189,7 @@ export const FormUser = ({
           userData={userData}
           programOptions={programOptions}
           yearOptions={yearOptions}
+          courseOptions={courseOptions}
           setEditedEmail={setEditedEmail}
           editedEmail={editedEmail}
           setEditedName={setEditedName}
@@ -171,6 +204,10 @@ export const FormUser = ({
           selectedProgram={selectedProgram}
           selectedYearLevel={selectedYearLevel}
           setSelectedYearLevel={setSelectedYearLevel}
+          setSelectedCourses={setSelectedCourses}
+          selectedCourses={selectedCourses}
+          setSelectedDepartment={setSelectedDepartment}
+          selectedDepartment={selectedDepartment}
           setPreview={setPreview}
           preview={preview}
         />

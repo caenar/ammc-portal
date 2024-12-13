@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./FormSelect.module.scss";
 import SearchBar from "components/SearchBar/SearchBar";
+import Checkbox from "../Checkbox/Checkbox";
 
 export const FormSelect = ({
   name,
@@ -12,10 +13,10 @@ export const FormSelect = ({
   selectedData,
   setSelectedData,
   disabled = false,
+  multipleChoices = false,
   searchBar = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
   const [isAbove, setIsAbove] = useState(false);
   const [searchedOptions, setSearchOptions] = useState([]);
   const [selectOptions, setSelectOptions] = useState(options);
@@ -43,7 +44,7 @@ export const FormSelect = ({
     if (defaultValue && !selectedData) {
       const defaultOption = options.find((option) => option.value === defaultValue);
       if (defaultOption) {
-        setSelectedData(defaultOption);
+        setSelectedData([defaultOption]);
       }
     }
   }, [defaultValue, selectedData, setSelectedData, options]);
@@ -70,12 +71,21 @@ export const FormSelect = ({
   };
 
   const handleOptionClick = (option) => {
-    setSelectedData(option);
-    setIsOpen(false);
-  };
-
-  const handleOptionHover = (index) => {
-    setHoveredIndex(index);
+    if (multipleChoices) {
+      const alreadySelected = selectedData.find(
+        (selected) => selected.value === option.value
+      );
+      if (alreadySelected) {
+        setSelectedData(
+          selectedData.filter((selected) => selected.value !== option.value)
+        );
+      } else {
+        setSelectedData([...selectedData, option]);
+      }
+    } else {
+      setSelectedData(option);
+      setIsOpen(false);
+    }
   };
 
   const handleClickOutside = (event) => {
@@ -96,22 +106,32 @@ export const FormSelect = ({
           className={`${styles.selectBox} ${disabled ? styles.disabled : ""}`}
           onClick={handleShowOptions}
           style={{
-            ...(selectedData ? { color: "black" } : { color: "gray" }),
+            ...(multipleChoices
+              ? selectedData.length > 0
+                ? { color: "black" }
+                : { color: "gray" }
+              : selectedData
+              ? { color: "black" }
+              : { color: "gray" }),
             ...(smallPadding ? { padding: "5px 10px" } : { padding: "0.7rem 1rem" }),
             ...(disabled ? { backgroundColor: "#f0f0f0", cursor: "not-allowed" } : {}),
           }}
           ref={selectRef}
         >
-          {selectedData ? selectedData.label : `Select ${name}`}
+          {multipleChoices
+            ? selectedData.length > 0
+              ? selectedData.map((item) => item.label).join(", ")
+              : `Select ${name}`
+            : selectedData?.label || `Select ${name}`}
         </div>
         <div
-          ref={optionsRef}
           className={`${styles.optionsContainer} ${isOpen ? styles.show : ""}`}
           style={{
             bottom: isAbove ? "110%" : "auto",
             top: isAbove ? "auto" : "110%",
             ...(height ? { maxHeight: height } : { maxHeight: "200px" }),
           }}
+          ref={optionsRef}
         >
           {searchBar && (
             <SearchBar
@@ -126,15 +146,21 @@ export const FormSelect = ({
             <div
               key={`${option.value}-${index}`}
               style={smallPadding ? { padding: "5px 10px" } : { padding: "0.75rem 1rem" }}
-              className={`${styles.option} ${
-                hoveredIndex === index ? styles.optionHover : ""
-              } ${selectedData?.value === option.value ? styles.selected : ""} ${
-                isOpen ? styles.show : ""
+              className={`${styles.option} ${isOpen ? styles.show : ""}
+              ${
+                !multipleChoices && selectedData?.value === option.value
+                  ? styles.selected
+                  : ""
               }`}
               onClick={() => handleOptionClick(option)}
-              onMouseEnter={() => handleOptionHover(index)}
-              onMouseLeave={() => setHoveredIndex(-1)}
             >
+              {multipleChoices && (
+                <Checkbox
+                  id={option.value}
+                  isChecked={selectedData.some((item) => item.value === option.value)}
+                  onChange={() => handleOptionClick(option)}
+                />
+              )}
               {option.label}
             </div>
           ))}

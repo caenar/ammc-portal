@@ -61,6 +61,10 @@
   width: 100%;
 }
 
+.hovered {
+  background-color: $white-hovered;
+}
+
 .tableHeader {
   border-bottom: 1px solid $light-gray-color;
   background-color: $table-header;
@@ -69,7 +73,7 @@
 }
 
 .tableItem {
-  padding: 1rem;
+  padding: 0.85rem;
 }
 
 .popupWrapper {

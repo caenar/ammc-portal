@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 import { User } from '../../user.schema';
 
 export enum Department {
-   CCOMPUTER_SCIENCE = 'Computer Science',
+   COMPUTER_SCIENCE = 'Computer Science',
    MATHEMATICS = 'Mathematics',
    PHYSICS = 'Physics',
    CHEMISTRY = 'Chemistry',

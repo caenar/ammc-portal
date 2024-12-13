@@ -3,25 +3,27 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "./Enrollment.module.scss";
 import { TbClock, TbMapPin, TbUser } from "react-icons/tb";
 
+import IconSizes from "constants/IconSizes";
 import Layout from "components/Layout/Layout";
 import TabMenu from "components/TabMenu/TabMenu";
 import UserIcon from "components/ui/UserIcon/UserIcon";
 import Breadcrumb from "components/Navigation/Breadcrumb";
 import Table from "components/Table/Table";
-import UserTable from "components/Table/UserTable";
-import SearchBar from "components/SearchBar/SearchBar";
 import Timeline from "components/Timeline/Timeline";
 import PopupAlert from "components/Popup/PopupAlert";
-
-import IconSizes from "constants/IconSizes";
-import usePostData from "hooks/usePostData";
-import { usePopupAlert } from "hooks";
-import { format } from "date-fns";
-import { debounce } from "lodash";
-import { useDataContext } from "hooks/contexts/DataContext";
+import Popup from "components/Popup/Popup";
 import Loading from "components/Loading/Loading";
-import { findDataByUserId } from "utils/findDataByUserId";
+import { UserContainer } from "components/ui/UserContainer/UserContainer";
+import { EnrollmentView } from "./components/EnrollmentView/EnrollmentView";
+
+import usePostData from "hooks/usePostData";
+import useDeleteData from "hooks/useDeleteData";
+import { usePopupAlert } from "hooks";
+import { useDataContext } from "hooks/contexts/DataContext";
 import { findDataById } from "utils/findDataById";
+import { exportToCSV } from "utils/exportToCSV";
+import { exportToJSON } from "utils/exportToJSON";
+import { formatDate } from "utils/formatDate";
 
 const Enrollment = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -40,6 +42,12 @@ const Enrollment = () => {
   const [currentTimelineStep, setCurrentTimelineStep] = useState(0);
   const [currentTimelineCourse, setCurrentTimelineCourse] = useState(null);
 
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showExportPopup, setShowExportPopup] = useState(false);
+  const [selectFileType, setSelectFileType] = useState("csv");
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const { dataState: students } = useDataContext("student");
   const { dataState: instructors } = useDataContext("instructor");
   const { dataState: enrollments } = useDataContext("enrollment");
@@ -51,12 +59,61 @@ const Enrollment = () => {
   const { popupState, showPopup, showError, showSuccess } = usePopupAlert();
   const { postData, loading } = usePostData();
 
+  const {
+    popupState: deleteState,
+    showPopup: showDeletePopup,
+    deleteData,
+  } = useDeleteData("student");
+
   const steps = [
     "Enrollment",
     "Choose a Student",
     "Select Courses",
     "Assign Section to Courses",
   ];
+
+  const findCourse = (courseId) => {
+    return courses.find((course) => course._id === courseId);
+  };
+
+  // filter button actions
+  const handleShowExportPopup = (user) => {
+    setSelectedUser(user);
+    setIsPopupVisible(false);
+    setShowExportPopup((prev) => !prev);
+  };
+
+  const handleShowDeleteConfirmation = (data) => {
+    if (data) {
+      setSelectedUser(data);
+      setIsPopupVisible(false);
+    }
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleDelete = async () => {
+    if (selectedUser?.studentId) {
+      await deleteData(selectedUser?.studentId, null);
+    } else {
+      await deleteData(selectedUser, null);
+    }
+
+    setShowDeleteConfirmation(false);
+  };
+
+  const handleExport = (user) => {
+    const filename = user?.studentId
+      ? `${user?.studentId}-data-export.${selectFileType}`
+      : `data-export.${selectFileType}`;
+
+    if (selectFileType === "csv") {
+      exportToCSV(filename, !Array.isArray(selectedUser) ? [selectedUser] : selectedUser);
+    } else if (selectFileType === "json") {
+      exportToJSON(filename, selectedUser);
+    }
+
+    setSelectFileType(null);
+  };
 
   const groupedEnrollments = Object.values(
     enrollments.reduce((acc, enrollment) => {
@@ -73,6 +130,9 @@ const Enrollment = () => {
     }, {})
   );
 
+  console.log(students)
+  console.log(groupedEnrollments)
+
   const courseMap = useMemo(() => {
     return courses.reduce((map, course) => {
       map[course._id] = course;
@@ -86,7 +146,8 @@ const Enrollment = () => {
   );
 
   const studentCurriculum = useMemo(
-    () => curriculums.find((curriculum) => curriculum._id === selectedStudent?.curriculumId),
+    () =>
+      curriculums.find((curriculum) => curriculum._id === selectedStudent?.curriculumId),
     [selectedStudent, curriculums]
   );
 
@@ -113,19 +174,6 @@ const Enrollment = () => {
       ? sections.filter((section) => section.courseId === currentTimelineCourse?._id)
       : [];
   }, [currentTimelineCourse, sections]);
-
-  const findCourse = (courseId) => {
-    return courses.find((course) => course._id === courseId);
-  };
-
-  const formatDate = (isoString) => {
-    return format(new Date(isoString), "MMMM d, yyyy");
-  };
-
-  const handleSearch = debounce((student) => {
-    setSelectedStudent(student);
-    handleNextStep();
-  }, 300);
 
   const handleNextStep = () => {
     if (currentStep === 3) {
@@ -223,7 +271,9 @@ const Enrollment = () => {
       }
     });
 
-    const studentProgram = programs ? findDataById(programs, selectedStudent.programId) : null;
+    const studentProgram = programs
+      ? findDataById(programs, selectedStudent.programId)
+      : null;
 
     const fee = studentProgram.fees.find(
       (item) => item.semester === studentCurriculum.semester
@@ -246,7 +296,10 @@ const Enrollment = () => {
     };
 
     await postData(body, "enrollment/batch-enroll");
-    showSuccess("Success!", `${selectedStudent.firstName} has been succesfully enrolled.`);
+    showSuccess(
+      "Success!",
+      `${selectedStudent.firstName} has been succesfully enrolled.`
+    );
   };
 
   const renderStudentData = (data) => {
@@ -256,13 +309,7 @@ const Enrollment = () => {
     return (
       student && (
         <>
-          <div className={styles.userContainer}>
-            <UserIcon image={student.userPhoto} size={48} />
-            <div className={styles.userInfo}>
-              <h4 className={styles.title}>{`${student.firstName} ${student.lastName}`}</h4>
-              <p className={styles.desc}>{student.email}</p>
-            </div>
-          </div>
+          <UserContainer user={student} size={48} />
           <p className={styles.role}>
             {program?.code} - {student.yearLevel}
           </p>
@@ -283,22 +330,16 @@ const Enrollment = () => {
     return (
       data && (
         <>
-          <div className={styles.userContainer}>
-            <UserIcon image={data.userPhoto} size={48} />
-            <div className={styles.userInfo}>
-              <h4 className={styles.title}>{`${data.firstName} ${data.lastName}`}</h4>
-              <p className={styles.desc}>{data.email}</p>
-            </div>
-          </div>
-          <p className={styles.role}>
-            {program?.code} - {data.yearLevel}
-          </p>
+          <UserContainer user={data} size={48} />
           <p
             className={`${styles.badge} ${
               data.enrollmentStatus ? styles.greenBadge : styles.redBadge
             }`}
           >
             {data.enrollmentStatus ? "Enrolled" : "Not enrolled"}
+          </p>
+          <p className={styles.role}>
+            {program?.code} - {data.yearLevel}
           </p>
         </>
       )
@@ -312,39 +353,6 @@ const Enrollment = () => {
       <button className={`${styles.deleteBtn} ${styles.iconCta}`}>Delete user</button>
     </div>
   );
-
-  const StudentView = () => {
-    return (
-      <Table
-        data={groupedEnrollments}
-        headers={["Name", "Program & Year", "Courses", "Enrolled On"]}
-        content={renderStudentData}
-        popupContent={renderPopupContent}
-        ctaText="Enroll student"
-        ctaAction={() => handleNextStep()}
-      />
-    );
-  };
-
-  const CourseView = () => {
-    return (
-      <Table
-        data={enrollments}
-        headers={["Name", "Program", "Instructor", "Created On"]}
-        content={(data) => (
-          <>
-            <p>{data.name}</p>
-            <p>{data.programId}</p>
-            <p>{data.curriculumId}</p>
-            <p>{formatDate(data.createdAt)}</p>
-          </>
-        )}
-        popupContent={renderPopupContent}
-        ctaText="Enroll student"
-        ctaAction={handleNextStep}
-      />
-    );
-  };
 
   const CourseList = ({ data, type }) => {
     return (
@@ -391,8 +399,38 @@ const Enrollment = () => {
   };
 
   const tabs = [
-    { label: "Students", content: <StudentView /> },
-    { label: "Courses", content: <CourseView /> },
+    {
+      label: "Students",
+      content: (
+        <EnrollmentView
+          type="student"
+          data={groupedEnrollments}
+          renderData={renderStudentData}
+          onExport={handleShowExportPopup}
+          onDelete={handleShowDeleteConfirmation}
+          isPopupVisible={isPopupVisible}
+          setIsPopupVisible={setIsPopupVisible}
+          popupContent={renderPopupContent}
+          handleNextStep={handleNextStep}
+        />
+      ),
+    },
+    {
+      label: "Courses",
+      content: (
+        <EnrollmentView
+          type="course"
+          data={enrollments}
+          renderData={renderStudentData}
+          onExport={handleShowExportPopup}
+          onDelete={handleShowDeleteConfirmation}
+          isPopupVisible={isPopupVisible}
+          setIsPopupVisible={setIsPopupVisible}
+          popupContent={renderPopupContent}
+          handleNextStep={handleNextStep}
+        />
+      ),
+    },
   ];
 
   return (
@@ -400,7 +438,7 @@ const Enrollment = () => {
       <main className={styles.mainContent}>
         <div className={styles.header}>
           <Breadcrumb
-            base="academic-planner"
+            base="dashboard"
             steps={steps}
             handlePreviousStep={handlePreviousStep}
             setCurrentStep={setCurrentStep}
@@ -412,18 +450,16 @@ const Enrollment = () => {
           {currentStep === 1 && <TabMenu tabs={tabs} />}
           {currentStep === 2 && (
             <div className={styles.selectStudentWrapper}>
-              <SearchBar
+              <Table
                 data={students}
-                height="3rem"
-                placeholder="Search for a student to enroll"
-                onSearch={handleSearch}
-              />
-              <UserTable
-                data={students}
-                headers={["Name", "Program", "Status"]}
+                headers={["Name", "Status", "Program & Year"]}
+                gridTemplateColumns="500px 1fr 400px"
                 content={renderStudentDataSearch}
-                isClickable={true}
-                clickableAction={handleSearch}
+                clickable={true}
+                clickableAction={handleNextStep}
+                tools={false}
+                actionBtn={false}
+                checkbox={false}
               />
             </div>
           )}
@@ -455,8 +491,8 @@ const Enrollment = () => {
                 <div className={styles.instructions}>
                   <h3 className={styles.title}>Instructions</h3>
                   <p className={styles.desc}>
-                    Please select the courses you'd like to enroll in. Click on each course to
-                    add it to your selection.
+                    Please select the courses you'd like to enroll in. Click on each
+                    course to add it to your selection.
                   </p>
                 </div>
                 <CourseList data={studentCourses.core} type="core" />
@@ -501,7 +537,9 @@ const Enrollment = () => {
                         <div
                           key={section._id}
                           className={`${styles.sectionCard} ${
-                            selectedSections[currentTimelineCourse._id]?.includes(section._id)
+                            selectedSections[currentTimelineCourse._id]?.includes(
+                              section._id
+                            )
                               ? styles.selected
                               : ""
                           }`}
@@ -511,7 +549,8 @@ const Enrollment = () => {
                             <div>
                               <h3 className={styles.title}>{section.description}</h3>
                               <p className={styles.desc}>
-                                {section?.capacity} out of {section?.availableSlots} enrolled
+                                {section?.capacity} out of {section?.availableSlots}{" "}
+                                enrolled
                               </p>
                             </div>
                             <span
@@ -591,6 +630,89 @@ const Enrollment = () => {
           )}
         </section>
       </main>
+
+      {/* popups needed */}
+      <Popup
+        show={showDeleteConfirmation}
+        close={() => setShowDeleteConfirmation(false)}
+        position={"center"}
+      >
+        <div className={styles.userPopup}>
+          <p>
+            <strong>
+              Are you sure you want to delete {selectedUser?.firstName || "these users"}?
+            </strong>
+          </p>
+          <div className={styles.buttonContainer}>
+            <button
+              type="button"
+              className={styles.secondaryBtn}
+              onClick={() => setShowDeleteConfirmation(false)}
+            >
+              Cancel
+            </button>
+            <button type="button" className={styles.redBtn} onClick={handleDelete}>
+              Delete
+            </button>
+          </div>
+        </div>
+      </Popup>
+      <Popup
+        show={showExportPopup}
+        close={() => setShowExportPopup(false)}
+        position="center"
+      >
+        <div className={styles.exportPopup}>
+          <div>
+            <h3 className={styles.title}>Export data</h3>
+            <p className={styles.desc}>Select the file type you would like to download</p>
+          </div>
+          <div className={styles.container}>
+            <div
+              className={`${styles.fileType} ${
+                selectFileType === "csv" ? styles.selected : ""
+              }`}
+              onClick={() => setSelectFileType("csv")}
+            >
+              <p>CSV</p>
+            </div>
+            <div className={styles.line}></div>
+            <div
+              className={`${styles.fileType} ${
+                selectFileType === "json" ? styles.selected : ""
+              }`}
+              onClick={() => setSelectFileType("json")}
+            >
+              <p>JSON </p>
+            </div>
+          </div>
+          <div className={styles.line}></div>
+          <div className={styles.buttonContainer}>
+            <button
+              type="button"
+              className={styles.secondaryBtn}
+              onClick={() => setShowExportPopup(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              onClick={() => handleExport()}
+            >
+              Export
+            </button>
+          </div>
+        </div>
+      </Popup>
+      <PopupAlert
+        icon={deleteState.icon}
+        border={deleteState.border}
+        color={deleteState.color}
+        title={deleteState.title}
+        message={deleteState.message}
+        show={showDeletePopup}
+      />
       <PopupAlert
         icon={popupState.icon}
         border={popupState.border}

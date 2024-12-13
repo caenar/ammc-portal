@@ -1,76 +1,60 @@
 @import "../../../styles/global.scss";
 
-section {
-   background-color: $light-primary-background;
-   padding: 1.5rem;
-   border-radius: 0.5rem;
+.line {
+   background-color: $light-gray-color;
 }
 
-.sectionLabel {
-   display: flex;
-   align-items: flex-end;
-   justify-content: space-between;
-   margin-bottom: 1.3rem;
+.overviewContainer {
+   display: grid;
+   grid-template-columns: repeat(4, 1fr);
+   gap: 0.7rem;
 
-   .labelText {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      font-size: 1.3rem;
-      font-weight: 500;
-      gap: 0.5rem;
-   }
-}
-
-.previewClasses,
-.previewEvents .previewAnnouncements {
-   display: flex;
-   flex-direction: column;
-   flex-grow: 1;
-}
-
-.previewClasses {
-   .sectionContent {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      flex-grow: 1;
-   }
-}
-
-.twoColumn {
-   // display: flex;
-   .sectionContent {
+   .overviewCard {
+      cursor: pointer;
       display: flex;
       flex-direction: column;
-      max-height: 18rem;
-      overflow-y: auto;
-      gap: 2rem;
-   }
-}
-
-.previewSchedule {
-   display: flex;
-   flex-direction: column;
-}
-
-.previewAssignments {
-   flex-grow: 1;
-   overflow: hidden;
-
-   .sectionContent {
-      display: flex;
-      flex-direction: column;
-      overflow-y: scroll;
-      max-height: 88%;
+      justify-content: end;
+      border: 1px solid $light-gray-color;
+      border-radius: $small-radius;
+      padding: 1.5rem;
       gap: 1rem;
-   }
-}
+      transition: 300ms $trans-fast;
 
-.previewEvents,
-.previewAnnouncements,
-.previewAssignments {
-   .sectionContent {
-      padding-right: 0.7rem;
+      .cta {
+         display: grid;
+         grid-template-columns: 70% 1fr;
+         align-items: flex-start;
+         width: 100%;
+      }
+
+      p {
+         color: $light-gray-color-600;
+      }
+
+      &:hover {
+         background-color: $white-hovered;
+      }
+
+      .enrollmentContainer {
+         flex-direction: column;
+         justify-content: start;
+         flex: 1;
+      }
+
+      .flexContainer {
+         display: flex;
+         align-items: start;
+         gap: 1.25rem;
+
+         .iconBtn {
+            background-color: $light-green-color-300;
+            color: $light-primary-background;
+            padding: 0.8rem;
+         }
+
+         h2 {
+            font-size: 1.6rem;
+         }
+      }
    }
 }

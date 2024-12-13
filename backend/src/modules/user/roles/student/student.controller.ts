@@ -28,9 +28,6 @@ export class StudentController {
          createStudentDto.userData,
       );
 
-      console.log(studentData);
-      console.log(file);
-
       return this.studentService.create(studentData, file);
    }
 

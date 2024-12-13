@@ -124,7 +124,7 @@ const Curriculum = () => {
     <Layout role="admin" pageName="Curriculum">
       <main className={styles.mainContent}>
         <Breadcrumb
-          base="academic-planner"
+          base="dashboard"
           steps={steps}
           handlePreviousStep={handlePreviousStep}
           setCurrentStep={(step) => updateState("currentStep", step)}

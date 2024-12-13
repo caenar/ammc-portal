@@ -41,7 +41,9 @@
 
   .guidelinesContent {
     display: grid;
+    align-content: start;
     gap: 1rem;
+    flex: 1;
 
     .guidelinesContainer {
       display: grid;

@@ -41,14 +41,14 @@ export class UserController {
 
    @Get()
    @UseGuards(AuthGuard('jwt'), RolesGuard)
-   @Roles('admin')
+   @Roles('admin', 'instructor')
    async findAll(): Promise<User[]> {
       return this.userService.findAll();
    }
 
    @Get(':userId')
    @UseGuards(AuthGuard('jwt'), RolesGuard)
-   @Roles('admin', 'student')
+   @Roles('admin', 'instructor', 'student')
    async findOne(@Param('userId') userId: string): Promise<User> {
       const user = await this.userService.findOne(userId);
 
@@ -62,7 +62,7 @@ export class UserController {
    @Put(':userId')
    @UseInterceptors(FileInterceptor('file'))
    @UseGuards(AuthGuard('jwt'), RolesGuard)
-   @Roles('admin')
+   @Roles('admin', 'instructor')
    async update(
       @Param('userId') userId: string,
       @Body() createUserDto: any,
@@ -93,7 +93,7 @@ export class UserController {
 
    @Delete('batch-delete')
    @UseGuards(AuthGuard('jwt'), RolesGuard)
-   @Roles('admin')
+   @Roles('admin', 'instructor')
    async batchDelete(
       @Body() body: { userIds: Types.ObjectId[] },
       @Res() res: Response,
@@ -120,7 +120,7 @@ export class UserController {
 
    @Delete(':userId')
    @UseGuards(AuthGuard('jwt'), RolesGuard)
-   @Roles('admin')
+   @Roles('admin', 'instructor')
    async delete(@Param('userId') userId: string, @Res() res: Response) {
       try {
          const result = await this.userService.delete(userId);

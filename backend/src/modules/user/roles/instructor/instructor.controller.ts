@@ -6,22 +6,29 @@ import {
    Param,
    Post,
    Put,
+   UploadedFile,
+   UseInterceptors,
 } from '@nestjs/common';
 import { InstructorService } from './instructor.service';
 import { CreateInstructorDto } from './instructor.dto';
 import { Instructor } from './instructor.schema';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('instructor')
 export class InstructorController {
    constructor(private readonly instructorService: InstructorService) {}
 
    @Post()
+   @UseInterceptors(FileInterceptor('file'))
    async create(
-      @Body()
-      file: Express.Multer.File,
-      createInstructorDto: CreateInstructorDto,
-   ): Promise<void> {
-      return this.instructorService.create(createInstructorDto, file);
+      @Body() createInstructorDto: any,
+      @UploadedFile() file: Express.Multer.File,
+   ): Promise<any> {
+      const instructorData: CreateInstructorDto = JSON.parse(
+         createInstructorDto.userData,
+      );
+
+      return this.instructorService.create(instructorData, file);
    }
 
    @Get()

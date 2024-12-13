@@ -1,23 +1,27 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./GradeManagement.module.scss";
+
 import useFetchData from "hooks/useFetchData";
-import { useDataContext } from "hooks/contexts/DataContext";
-import { usePopupAlert } from "hooks";
 import useUpdateData from "hooks/useUpdateData";
+import { useDataContext } from "hooks/contexts/DataContext";
+import { useAuth, usePopupAlert } from "hooks";
+
+import IconSizes from "constants/IconSizes";
 import Loading from "components/Loading/Loading";
 import Layout from "components/Layout/Layout";
 import PopupAlert from "components/Popup/PopupAlert";
-import { FormSelect } from "components/ui/Form";
 import SearchBar from "components/SearchBar/SearchBar";
 import Table from "./components/Table";
 import Popup from "components/Popup/Popup";
-import { UserContainer } from "components/ui/UserContainer/UserContainer";
-import IconSizes from "constants/IconSizes";
-import { TbCircleCheck, TbId } from "react-icons/tb";
 import TabMenu from "components/TabMenu/TabMenu";
 import EditGrade from "./components/EditGrade";
+import { FormSelect } from "components/ui/Form";
+import { UserContainer } from "components/ui/UserContainer/UserContainer";
+import { TbCircleCheck, TbId } from "react-icons/tb";
 
 const GradeManagement = () => {
+  const { user: loggedInUser } = useAuth();
+
   const [loading, setLoading] = useState(true);
 
   const [showPopup, setShowPopup] = useState({ edit: false });
@@ -202,8 +206,10 @@ const GradeManagement = () => {
     }
   };
 
+  const role = loggedInUser.role === "admin" ? "admin" : "instructor";
+
   return (
-    <Layout role="admin" pageName="Grade Management">
+    <Layout role={role} pageName="Grade Management">
       {!loading ? (
         <div className={styles.contentDivider}>
           <main className={styles.mainContent}>
@@ -292,31 +298,33 @@ const GradeManagement = () => {
                 </div>
               </div>
             </section>
-            <section className={styles.requestsContent}>
-              <div>
-                <h3 className={styles.title}>Requests</h3>
-                <p className={styles.desc}>
-                  Manage requests for grade changes submitted by instructors.
-                </p>
-              </div>
-              <div className={styles.line}></div>
-              <ul className={styles.requestsContainer}>
-                <div className={styles.requestItem}>
-                  <span className={styles.badge}>PENDING</span>
-                  <li>
-                    Change grade for <strong>John Doe</strong> in{" "}
-                    <strong>Course A</strong>
-                  </li>
+            {loggedInUser === "admin" && (
+              <section className={styles.requestsContent}>
+                <div>
+                  <h3 className={styles.title}>Requests</h3>
+                  <p className={styles.desc}>
+                    Manage requests for grade changes submitted by instructors.
+                  </p>
                 </div>
-                <div className={styles.requestItem}>
-                  <span className={styles.badge}>PENDING</span>
-                  <li>
-                    Change grade for <strong>Jane Doe</strong> in{" "}
-                    <strong>Course B</strong>
-                  </li>
-                </div>
-              </ul>
-            </section>
+                <div className={styles.line}></div>
+                <ul className={styles.requestsContainer}>
+                  <div className={styles.requestItem}>
+                    <span className={styles.badge}>PENDING</span>
+                    <li>
+                      Change grade for <strong>John Doe</strong> in{" "}
+                      <strong>Course A</strong>
+                    </li>
+                  </div>
+                  <div className={styles.requestItem}>
+                    <span className={styles.badge}>PENDING</span>
+                    <li>
+                      Change grade for <strong>Jane Doe</strong> in{" "}
+                      <strong>Course B</strong>
+                    </li>
+                  </div>
+                </ul>
+              </section>
+            )}
           </aside>
         </div>
       ) : (

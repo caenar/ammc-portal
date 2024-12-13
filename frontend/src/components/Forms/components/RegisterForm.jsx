@@ -5,6 +5,7 @@ import CustomDatePicker from "components/CustomDatePicker/CustomDatePicker";
 import UploadWidget from "components/UploadWidget/UploadWidget";
 import { FormInput, FormPassword, FormSelect } from "components/ui/Form";
 import { FormStudent } from "../FormStudent";
+import { FormInstructor } from "../FormInstructor";
 
 const RegisterForm = memo(
   ({
@@ -14,6 +15,7 @@ const RegisterForm = memo(
     register,
     programOptions,
     yearOptions,
+    courseOptions,
     selectedDate,
     setSelectedDate,
     setSelectedGender,
@@ -24,6 +26,10 @@ const RegisterForm = memo(
     setSelectedProgram,
     selectedYearLevel,
     setSelectedYearLevel,
+    setSelectedCourses,
+    selectedCourses,
+    setSelectedDepartment,
+    selectedDepartment,
   }) => {
     return (
       <>
@@ -35,21 +41,49 @@ const RegisterForm = memo(
               name="firstName"
               placeholder="First name"
               register={register}
-              errors={errors}
             />
             <FormInput
               type="text"
               name="lastName"
               placeholder="Last name"
               register={register}
-              errors={errors}
             />
           </div>
         </div>
+        {role === "instructor" && (
+          <>
+            <div className={styles.line}></div>
+            <FormInstructor
+              userData={userData}
+              courseOptions={courseOptions}
+              setSelectedCourses={setSelectedCourses}
+              selectedCourses={selectedCourses}
+              setSelectedDepartment={setSelectedDepartment}
+              selectedDepartment={selectedDepartment}
+            />
+          </>
+        )}
+        {role === "student" && (
+          <>
+            <div className={styles.line}></div>
+            <FormStudent
+              userData={userData}
+              programOptions={programOptions}
+              yearOptions={yearOptions}
+              selectedProgram={selectedProgram}
+              setSelectedProgram={setSelectedProgram}
+              selectedYearLevel={selectedYearLevel}
+              setSelectedYearLevel={setSelectedYearLevel}
+            />
+          </>
+        )}
         <div className={styles.line}></div>
         <div className={styles.twoColumn}>
           <h4>Birthdate</h4>
-          <CustomDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+          <CustomDatePicker
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
         </div>
         <div className={styles.line}></div>
         <div className={styles.twoColumn}>
@@ -110,18 +144,6 @@ const RegisterForm = memo(
           <h4>Profile Photo</h4>
           <UploadWidget fileSelect={setSelectedFile} selectedFile={selectedFile} />
         </div>
-        {role === "student" && (
-          <FormStudent
-            userData={userData}
-            programOptions={programOptions}
-            yearOptions={yearOptions}
-            selectedProgram={selectedProgram}
-            setSelectedProgram={setSelectedProgram}
-            selectedYearLevel={selectedYearLevel}
-            setSelectedYearLevel={setSelectedYearLevel}
-            errors={errors}
-          />
-        )}
       </>
     );
   }

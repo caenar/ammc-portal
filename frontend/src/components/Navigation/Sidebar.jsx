@@ -35,15 +35,19 @@ export const Sidebar = ({ role }) => {
       "/student/dashboard/finance": "finance",
       "/student/dashboard/announcements": "announcements",
 
+      "/instructor/dashboard": "dashboard",
+      "/instructor/dashboard/class-management": "classManagement",
+      "/instructor/dashboard/grade-management": "gradeManagement",
+      "/instructor/dashboard/calendar": "calendar",
+
       "/admin/dashboard": "dashboard",
+      "/admin/dashboard/courses": "dashboard",
+      "/admin/dashboard/programs": "dashboard",
+      "/admin/dashboard/enrollment": "dashboard",
+      "/admin/dashboard/curriculums": "dashboard",
       "/admin/dashboard/user-management": "userManagement",
       "/admin/dashboard/grade-management": "gradeManagement",
       "/admin/dashboard/finance-management": "financeManagement",
-      "/admin/dashboard/academic-planner": "academicPlanner",
-      "/admin/dashboard/academic-planner/courses": "academicPlanner",
-      "/admin/dashboard/academic-planner/programs": "academicPlanner",
-      "/admin/dashboard/academic-planner/enrollment": "academicPlanner",
-      "/admin/dashboard/academic-planner/curriculums": "academicPlanner",
     };
 
     const activeRoute = pathToTabMapping[location.pathname];
@@ -113,7 +117,10 @@ export const Sidebar = ({ role }) => {
                 className={styles.itemBtn}
                 onClick={() => handleTabClick("courses")}
               >
-                <button type="button" className={activeTab === "courses" ? styles.active : ""}>
+                <button
+                  type="button"
+                  className={activeTab === "courses" ? styles.active : ""}
+                >
                   <TbCertificate size={ICON_SIZE} />
                   Courses
                 </button>
@@ -126,7 +133,10 @@ export const Sidebar = ({ role }) => {
                 className={styles.itemBtn}
                 onClick={() => handleTabClick("finance")}
               >
-                <button type="button" className={activeTab === "finance" ? styles.active : ""}>
+                <button
+                  type="button"
+                  className={activeTab === "finance" ? styles.active : ""}
+                >
                   <TbReceipt size={ICON_SIZE} />
                   Finance
                 </button>
@@ -149,10 +159,69 @@ export const Sidebar = ({ role }) => {
         );
       case "instructor":
         return (
-          <>
-            <Link to="/instructor-dashboard">Instructor Dashboard</Link>
-            {/* Add more teacher nav items here */}
-          </>
+          <div className={styles.itemWrapper}>
+            <div className={styles.sealContainer}>
+              <img src={logo} alt="Dr. AMMC Seal" />
+              <div className={styles.sealContainerText}>
+                <h1>Dr. AMMC</h1>
+                <p>Instructor Portal</p>
+              </div>
+            </div>
+            <div className={styles.itemContainer}>
+              <Link
+                to="/instructor/dashboard"
+                className={styles.itemBtn}
+                onClick={() => handleTabClick("dashboard")}
+              >
+                <button
+                  type="button"
+                  className={activeTab === "dashboard" ? styles.active : ""}
+                >
+                  <TbLayoutDashboardFilled size={ICON_SIZE} />
+                  Dashboard
+                </button>
+              </Link>
+              <Link
+                to="/instructor/dashboard/class-management"
+                className={styles.itemBtn}
+                onClick={() => handleTabClick("classManagement")}
+              >
+                <button
+                  type="button"
+                  className={activeTab === "classManagement" ? styles.active : ""}
+                >
+                  <TbSchool size={ICON_SIZE} />
+                  Class Management
+                </button>
+              </Link>
+              <Link
+                to="/instructor/dashboard/grade-management"
+                className={styles.itemBtn}
+                onClick={() => handleTabClick("gradeManagement")}
+              >
+                <button
+                  type="button"
+                  className={activeTab === "gradeManagement" ? styles.active : ""}
+                >
+                  <TbBook size={ICON_SIZE} />
+                  Grade Management
+                </button>
+              </Link>
+              <Link
+                to="/instructor/dashboard/calendar"
+                className={styles.itemBtn}
+                onClick={() => handleTabClick("calendar")}
+              >
+                <button
+                  type="button"
+                  className={activeTab === "calendar" ? styles.active : ""}
+                >
+                  <TbCalendarEvent size={ICON_SIZE} />
+                  Calendar
+                </button>
+              </Link>
+            </div>
+          </div>
         );
       case "admin":
         return (
@@ -176,19 +245,6 @@ export const Sidebar = ({ role }) => {
                 >
                   <TbLayoutDashboardFilled size={ICON_SIZE} />
                   Dashboard
-                </button>
-              </Link>
-              <Link
-                to="/admin/dashboard/academic-planner"
-                className={styles.itemBtn}
-                onClick={() => handleTabClick("academicPlanner")}
-              >
-                <button
-                  type="button"
-                  className={activeTab === "academicPlanner" ? styles.active : ""}
-                >
-                  <TbSchool size={ICON_SIZE} />
-                  Academic Planner
                 </button>
               </Link>
               <Link

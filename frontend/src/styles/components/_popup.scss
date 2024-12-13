@@ -132,3 +132,45 @@
     padding: 5px 9px;
   }
 }
+
+
+.exportPopup {
+  .container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 7px;
+    padding: 7px;
+    border: 1px solid $light-gray-color-200;
+    border-radius: $default-radius;
+
+    .fileType {
+      cursor: pointer;
+      width: 100%;
+      padding: 10px;
+      border-radius: $small-radius;
+      border: 1px solid transparent;
+      transition: 100ms $trans-fast;
+      text-align: center;
+
+      &:hover {
+        background-color: $white-hovered;
+      }
+
+      &.selected {
+        background-color: #dcf3d0;
+        border: 1px solid #447730;
+
+        p {
+          color: #447730;
+          font-weight: 700;
+        }
+      }
+    }
+
+    .line {
+      height: 80%;
+      width: 3px;
+    }
+  }
+}

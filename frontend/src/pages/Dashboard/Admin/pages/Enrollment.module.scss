@@ -211,7 +211,7 @@
       align-items: center;
       justify-items: center;
     }
-    
+
     .tableHeader {
       background-color: $light-green-color-300;
       color: $light-primary-background;
@@ -227,7 +227,6 @@
         padding: 0.7rem 1rem;
       }
     }
-
   }
 }
 
@@ -259,6 +258,13 @@
       font-weight: 400;
     }
   }
+}
+
+.exportPopup {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: $small-radius;
 }
 
 .popupWrapper {

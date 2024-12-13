@@ -37,6 +37,8 @@
 }
 
 .userPopup,
+.createPopup,
+.rolePopup,
 .exportPopup {
   display: grid;
   gap: 1rem;
@@ -44,43 +46,40 @@
   border-radius: $small-radius;
 }
 
-.exportPopup {
-  .container {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 7px;
-    padding: 7px;
+.createPopup {
+  width: 45rem;
+}
+
+.rolePopup {
+  width: 25rem;
+
+  .iconLabel {
+    margin-bottom: 0.4rem;
+
+    .title {
+      margin: 0;
+    }
+  }
+
+  .roleContainer {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .roleItem {
+    cursor: pointer;
     border: 1px solid $light-gray-color-200;
-    border-radius: $default-radius;
+    padding: 1rem;
+    border-radius: $small-radius;
+    transition: 300ms $trans-fast;
 
-    .fileType {
-      cursor: pointer;
-      width: 100%;
-      padding: 10px;
-      border-radius: $small-radius;
-      border: 1px solid transparent;
-      transition: 100ms $trans-fast;
-      text-align: center;
-
-      &:hover {
-        background-color: $white-hovered;
-      }
-
-      &.selected {
-        background-color: #dcf3d0;
-        border: 1px solid #447730;
-
-        p {
-          color: #447730;
-          font-weight: 700;
-        }
-      }
+    &:hover {
+      background-color: $white-hovered;
     }
 
-    .line {
-      height: 80%;
-      width: 3px;
+    &.selected {
+      background-color: #dcf3d0;
+      border: 1px solid #447730;
     }
   }
 }

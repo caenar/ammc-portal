@@ -12,7 +12,7 @@
   border: 1px solid $light-gray-color;
 
   input {
-    border: none;
+    border: none !important; 
     background: none;
     outline: none;
     width: 100%;

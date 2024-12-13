@@ -15,7 +15,7 @@
     border: 1px solid $light-gray-color;
     background-color: #fff;
     font-size: 0.8rem;
-    color: gray;
+    color: #808080;
     cursor: pointer;
   }
 
@@ -43,11 +43,14 @@
 
   .option {
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    visibility: hidden;
+    gap: 10px;
     font-size: 0.8rem;
     color: $light-primary-text;
     font-weight: 500;
     background-color: #fff;
-    visibility: hidden;
     transition: 200ms $trans-fast;
 
     &.show {

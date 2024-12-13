@@ -16,17 +16,18 @@ import InstructorDashboard from "./pages/Dashboard/Instructor/InstructorDashboar
 
 import Enrollment from "pages/Dashboard/Admin/pages/Enrollment";
 import Curriculum from "pages/Dashboard/Admin/pages/Curriculum";
-import AcademicPlanner from "pages/Dashboard/Admin/pages/AcademicPlanner";
-import GradeManagement from "components/GradeManagement/GradeManagement";
 import UserManagement from "./pages/Dashboard/Admin/pages/UserManagement";
+import ClassManagement from "pages/Dashboard/Instructor/pages/ClassManagement";
 import Courses from "pages/Dashboard/Student/pages/Courses";
 import Schedule from "pages/Dashboard/Student/pages/Schedule";
 import Finance from "pages/Dashboard/Student/pages/Finance";
 import Examboard from "pages/Dashboard/Student/pages/Examboard";
 import Announcements from "pages/Dashboard/Student/pages/Announcements";
 
-import "./App.scss";
 import FinanceManagement from "components/FinanceManagement/FinanceManagement";
+import GradeManagement from "components/GradeManagement/GradeManagement";
+
+import "./App.scss";
 
 function App() {
   return (
@@ -58,15 +59,11 @@ function App() {
             element={<PrivateRoute element={<UserManagement />} roles={["admin"]} />}
           />
           <Route
-            path="/admin/dashboard/academic-planner"
-            element={<PrivateRoute element={<AcademicPlanner />} roles={["admin"]} />}
-          />
-          <Route
-            path="/admin/dashboard/academic-planner/enrollment"
+            path="/admin/dashboard/enrollment"
             element={<PrivateRoute element={<Enrollment />} roles={["admin"]} />}
           />
           <Route
-            path="/admin/dashboard/academic-planner/curriculums"
+            path="/admin/dashboard/curriculums"
             element={<PrivateRoute element={<Curriculum />} roles={["admin"]} />}
           />
 
@@ -76,6 +73,24 @@ function App() {
             element={
               <PrivateRoute
                 element={<InstructorDashboard />}
+                roles={["instructor", "admin"]}
+              />
+            }
+          />
+          <Route
+            path="/instructor/dashboard/class-management"
+            element={
+              <PrivateRoute
+                element={<ClassManagement />}
+                roles={["instructor", "admin"]}
+              />
+            }
+          />
+          <Route
+            path="/instructor/dashboard/grade-management"
+            element={
+              <PrivateRoute
+                element={<GradeManagement />}
                 roles={["instructor", "admin"]}
               />
             }

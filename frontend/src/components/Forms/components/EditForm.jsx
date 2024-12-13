@@ -26,7 +26,6 @@ const EditForm = memo(
     setSelectedGender,
     selectedGender,
     setSelectedImage,
-    selectedImage,
     setSelectedProgram,
     selectedProgram,
     selectedYearLevel,

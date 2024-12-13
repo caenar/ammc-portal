@@ -19,9 +19,12 @@ import { findDataByUserId } from "utils/findDataByUserId";
 import useUpdateData from "hooks/useUpdateData";
 import { exportToCSV } from "utils/exportToCSV";
 import { exportToJSON } from "utils/exportToJSON";
+import { TbEye, TbKey, TbSchool } from "react-icons/tb";
+import IconSizes from "constants/IconSizes";
 
 const UserManagement = () => {
   const [showCreateUserPopup, setShowCreateUserPopup] = useState(false);
+  const [showRoleSelectPopup, setShowRoleSelectPopup] = useState(false);
   const [showEditUserPopup, setShowEditUserPopup] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showExportPopup, setShowExportPopup] = useState(false);
@@ -29,6 +32,7 @@ const UserManagement = () => {
   const [selectFileType, setSelectFileType] = useState("csv");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState("student");
 
   const { data: users, fetchData: userFetchData } = useFetchData("user");
   const { data: instructors, fetchData: instructorFetchData } =
@@ -61,7 +65,13 @@ const UserManagement = () => {
     studentFetchData();
   }, [instructorFetchData, studentFetchData, userFetchData]);
 
+  const handleShowRoleSelectPopup = () => {
+    setShowRoleSelectPopup((prev) => !prev);
+    setSelectedRole("student");
+  };
+
   const handleShowCreatePopup = () => {
+    setShowRoleSelectPopup(false);
     setShowCreateUserPopup((prev) => !prev);
   };
 
@@ -92,6 +102,10 @@ const UserManagement = () => {
       setIsPopupVisible(false);
     }
     setShowDeleteConfirmation(true);
+  };
+
+  const handleSelectRole = (role) => {
+    setSelectedRole(role);
   };
 
   const handleDelete = async () => {
@@ -178,31 +192,107 @@ const UserManagement = () => {
               isPopupVisible={isPopupVisible}
               setIsPopupVisible={setIsPopupVisible}
               ctaText="Create user"
-              ctaAction={() => handleShowCreatePopup()}
+              ctaAction={() => handleShowRoleSelectPopup()}
             />
           </div>
         </section>
       </main>
 
       {/* All of these shit below are popups */}
-      <Popup show={showCreateUserPopup} close={handleShowCreatePopup} position="center">
-        <div className={styles.userPopup}>
-          <h2>Create a user</h2>
+      <Popup
+        show={showRoleSelectPopup}
+        close={handleShowRoleSelectPopup}
+        position="center"
+      >
+        <div className={styles.rolePopup}>
+          <h2>Select a role</h2>
+          <div className={styles.roleContainer}>
+            <div
+              className={`${styles.roleItem} ${
+                selectedRole === "admin" && styles.selected
+              }`}
+              onClick={() => handleSelectRole("admin")}
+            >
+              <div className={styles.iconLabel}>
+                <TbKey size={IconSizes.MEDIUM} />
+                <h3 className={styles.title}>Admin</h3>
+              </div>
+              <p className={styles.desc}>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias,
+                consequatur.
+              </p>
+            </div>
+            <div
+              className={`${styles.roleItem} ${
+                selectedRole === "instructor" && styles.selected
+              }`}
+              onClick={() => handleSelectRole("instructor")}
+            >
+              <div className={styles.iconLabel}>
+                <TbEye size={IconSizes.MEDIUM} />
+                <h3 className={styles.title}>Instructor</h3>
+              </div>
+              <p className={styles.desc}>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate,
+                reprehenderit?
+              </p>
+            </div>
+            <div
+              className={`${styles.roleItem} ${
+                selectedRole === "student" && styles.selected
+              }`}
+              onClick={() => handleSelectRole("student")}
+            >
+              <div className={styles.iconLabel}>
+                <TbSchool size={IconSizes.MEDIUM} />
+                <h3 className={styles.title}>Student</h3>
+              </div>
+              <p className={styles.desc}>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate,
+                reprehenderit?
+              </p>
+            </div>
+          </div>
+          <div className={styles.buttonContainer}>
+            <button
+              type="button"
+              className={styles.secondaryBtn}
+              onClick={handleShowRoleSelectPopup}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              onClick={handleShowCreatePopup}
+            >
+              Fill out details
+            </button>
+          </div>
+        </div>
+      </Popup>
+      <Popup
+        show={showCreateUserPopup}
+        close={handleShowCreatePopup}
+        position="center"
+      >
+        <div className={styles.createPopup}>
+          <h2>
+            Create {selectedRole === "student" ? "a" : "an"} {selectedRole}
+          </h2>
           <FormUser
             type="register"
-            role="student"
+            role={selectedRole}
             loading={createLoading}
             createAccount={handleCreateUser}
             createdAction={handleShowCreatePopup}
           />
         </div>
       </Popup>
-
       <Popup
         show={showEditUserPopup}
         close={handleShowEditPopup}
         position="center"
-        handleClickOutside={false}
       >
         <div className={styles.userPopup}>
           <FormUser
@@ -216,7 +306,6 @@ const UserManagement = () => {
           />
         </div>
       </Popup>
-
       <Popup
         show={showDeleteConfirmation}
         close={() => setShowDeleteConfirmation(false)}
@@ -242,7 +331,6 @@ const UserManagement = () => {
           </div>
         </div>
       </Popup>
-
       <Popup
         show={showExportPopup}
         close={() => setShowExportPopup(false)}
@@ -291,7 +379,6 @@ const UserManagement = () => {
           </div>
         </div>
       </Popup>
-
       <PopupAlert
         icon={deleteState.icon}
         border={deleteState.border}
@@ -300,7 +387,6 @@ const UserManagement = () => {
         message={deleteState.message}
         show={showDeletePopup}
       />
-
       <PopupAlert
         icon={createState.icon}
         border={createState.border}
@@ -309,7 +395,6 @@ const UserManagement = () => {
         message={createState.message}
         show={showCreatePopup}
       />
-
       <PopupAlert
         icon={updateState.icon}
         border={updateState.border}

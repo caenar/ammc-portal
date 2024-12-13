@@ -19,7 +19,7 @@ export class InstructorService {
    async create(
       createInstructorDto: CreateInstructorDto,
       file: Express.Multer.File,
-   ): Promise<void> {
+   ): Promise<any> {
       this.logger.log('Creating new instructor...');
 
       const instructor = await this.userService.create(
