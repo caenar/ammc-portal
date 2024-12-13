@@ -1,0 +1,72 @@
+@import "../../styles/global.scss";
+
+.widgetWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.preview {
+  height: 7rem;
+  width: 7rem;
+  overflow: none;
+
+  img {
+    display: block;
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    padding: 5px;
+    border: 1px solid $light-gray-color-200;
+  }
+}
+
+.widgetContainer {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  border: 1px solid $light-gray-color;
+  border-radius: $small-radius;
+  padding: 1rem;
+  flex: 1;
+
+  p {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  span {
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 1.5px;
+  }
+
+  .iconBtn {
+    cursor: unset;
+    height: 35px;
+    width: 35px;
+    margin-bottom: 5px;
+    border-radius: 50%;
+    background-color: $white-hovered;
+    color: $light-primary-text;
+    padding: 0;
+    transform: scale(100%);
+    transition: 300ms $trans-fast;
+  }
+
+  &:hover {
+    .iconBtn {
+      transform: scale(110%);
+    }
+  }
+
+  .secondaryBtn {
+    margin-top: 5px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+  }
+}

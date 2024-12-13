@@ -1,0 +1,41 @@
+@import "../../../../../../styles/global.scss";
+
+.line {
+   background-color: $light-gray-color;
+}
+
+.table {
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+}
+
+.header,
+.contentItem {
+   display: grid;
+   grid-template-columns: 1fr 1fr 3fr 1.5fr 1fr 1fr;
+   align-items: center;
+   justify-items: center;
+}
+
+.header {
+   background-color: $light-green-color-300;
+   color: $light-primary-background;
+   border-radius: $small-radius;
+   padding: 0.5rem;
+
+   .headerLabel {
+      font-weight: 600;
+      font-size: 1rem;
+   }
+}
+
+.content {
+   display: flex;
+   flex-direction: column;
+
+   .contentItem {
+      border-bottom: 1px solid $light-gray-color;
+      padding: 1rem;
+   }
+}

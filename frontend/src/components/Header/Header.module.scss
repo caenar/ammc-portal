@@ -1,0 +1,169 @@
+@import "../../styles/global.scss";
+
+.header {
+  display: flex;
+  justify-content: end;
+  padding: 0.8rem 2rem;
+  border-bottom: 1px solid $light-gray-color-200;
+  background-color: $light-primary-background;
+
+  .sideBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 8px;
+
+    .notifications,
+    .userContainer {
+      cursor: pointer;
+    }
+  }
+}
+
+.popupWrapperUser,
+.popupWrapperNotif {
+  position: relative;
+
+  .line {
+    height: 1.4px;
+  }
+}
+
+.popupWrapperUser {
+  width: 15rem;
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
+
+  .userContainer {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .userIcon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      padding: 0;
+      overflow: hidden;
+      margin-left: 0.5rem;
+
+      img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+      }
+    }
+
+    .userName {
+      display: flex;
+      flex-direction: column;
+      .name {
+        font-weight: 600;
+      }
+      .course {
+        font-size: 0.9rem;
+        opacity: 0.5;
+      }
+    }
+  }
+  .popupContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    button {
+      background-color: transparent;
+    }
+
+    .iconBtn {
+      color: $light-primary-text;
+      padding: 0.6rem;
+      justify-content: flex-start;
+      width: 100%;
+      border-radius: 0.5rem;
+      transition: 200ms $trans-smooth;
+
+      &:hover {
+        background-color: $light-gray-color-100;
+      }
+    }
+  }
+}
+
+.popupWrapperNotif {
+  width: 25rem;
+
+  .titleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+
+    h2 {
+      font-size: 1.2rem;
+    }
+
+    .ctaBtn {
+      border: 1px solid $light-gray-color;
+      border-radius: $small-radius;
+      transition: 150ms $trans-smooth;
+      
+      &:hover {
+        color: $black-hovered;
+        background-color: $white-hovered;
+      }
+    }
+  }
+
+  .notifItem:not(:last-of-type) {
+    border-bottom: 1px solid $light-gray-color;
+  }
+
+  .notifItem {
+    display: flex;
+    padding: 0.8rem 1rem;
+    gap: 1rem;
+    font-size: 0.9rem;
+
+    .notifUser {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 50px;
+      width: 50px;
+      background-color: pink;
+      border-radius: 50%;
+
+      .notifCircle {
+        position: absolute;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        border: 2px solid $light-primary-background;
+        background-color: $light-green-color-300;
+        top: 0;
+        left: 0;
+      }
+
+      p {
+        color: #c7334b;
+        font-size: 1.3rem;
+      }
+    }
+
+    .notifContent {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 32ch;
+
+      .status {
+        font-size: 0.8rem;
+        opacity: 0.5;
+      }
+    }
+  }
+}

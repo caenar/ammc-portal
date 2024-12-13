@@ -1,0 +1,52 @@
+@import "../../styles/global.scss";
+
+.customWrapper {
+  width: 100%;
+}
+.customInput {
+  cursor: pointer;
+  padding: 0.4rem;
+  border: 1px solid $light-gray-color-200 !important;
+  border-radius: 5px;
+  width: 100%;
+
+  &:focus {
+    caret-color: transparent;
+  }
+}
+
+.customPopper {
+  pointer-events: none;
+  transform: scale(97%);
+  transition: 200ms $trans-fast;
+  z-index: 2;
+
+  span {
+    transition: 200ms $trans-fast;
+    visibility: hidden;
+  }
+
+  &.show {
+    pointer-events: unset;
+
+    span {
+      visibility: visible;
+    }
+  }
+}
+
+.customCalendar {
+  border-radius: $small-radius;
+  border: 1px solid $light-gray-color-200;
+  visibility: hidden;
+  opacity: 0;
+  transform: scale(97%);
+  transition: 200ms $trans-fast;
+  z-index: 2;
+
+  &.show {
+    opacity: 1;
+    transform: scale(100%);
+    visibility: visible;
+  }
+}

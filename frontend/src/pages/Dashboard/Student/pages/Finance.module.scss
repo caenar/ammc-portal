@@ -1,0 +1,128 @@
+@import "../../../../styles/global.scss";
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+}
+
+.cardWrapper {
+  display: grid;
+  grid-template-rows: max-content 1fr;
+  gap: 1rem;
+  overflow: auto;
+
+  section {
+    overflow: auto;
+  }
+}
+
+.balanceCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .title {
+    margin-bottom: 0.3rem;
+  }
+
+  .desc {
+    margin-top: 10px;
+    line-height: 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .line {
+    margin-top: 1rem;
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .balance {
+    font-size: 4rem;
+    font-weight: 700;
+  }
+}
+
+.overviewCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .info {
+    .title {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.7rem;
+  }
+
+  .title {
+    margin: 0;
+  }
+
+  .fees,
+  .discounts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .fees {
+    .feeContainer {
+      margin-top: 0.4rem;
+    }
+
+    .desc {
+      font-size: 0.9rem;
+    }
+
+    .line {
+      margin: 0.8rem 0;
+    }
+
+    .spaceBetween {
+      align-items: start;
+    }
+  }
+}
+
+.ledgerCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow: auto;
+
+  .tableWrapper {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $light-gray-color-100;
+    border-radius: $small-radius;
+    overflow: auto;
+
+    .tableHeader,
+    .tableItem {
+      display: grid;
+      grid-template-columns: 1fr 125px 125px 125px 170px 125px;
+    }
+
+    .tableHeader {
+      padding: 0.8rem;
+      background-color: $table-header;
+      border-bottom: 1px solid $light-gray-color-100;
+      overflow: auto;
+    }
+
+    .tableItem {
+      padding: 0.8rem;
+      overflow: auto;
+    }
+  }
+}
