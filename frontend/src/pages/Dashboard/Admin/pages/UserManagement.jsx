@@ -148,7 +148,7 @@ const UserManagement = () => {
     return (
       <>
         <div className={styles.userContainer}>
-          <UserIcon image={getUserPhoto(data.userPhoto)} size={48} />
+          <UserIcon image={data.userPhoto} size={48} />
           <div className={styles.userInfo}>
             <h4 className={styles.title}>{`${data.firstName} ${data.lastName}`}</h4>
             <p className={styles.desc}>{data.email}</p>
@@ -193,6 +193,7 @@ const UserManagement = () => {
               setIsPopupVisible={setIsPopupVisible}
               ctaText="Create user"
               ctaAction={() => handleShowRoleSelectPopup()}
+              clickable={false}
             />
           </div>
         </section>

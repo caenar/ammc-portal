@@ -13,20 +13,21 @@
 .header,
 .contentItem {
    display: grid;
-   grid-template-columns: 1fr 1fr 3fr 1.5fr 1fr 1fr;
+   grid-template-columns: 1fr 1fr 2fr 1.5fr 1fr 1fr;
    align-items: center;
    justify-items: center;
 }
 
 .header {
-   background-color: $light-green-color-300;
-   color: $light-primary-background;
+   text-transform: uppercase;
+   color: $light-primary-text;
+   background-color: $table-header;
    border-radius: $small-radius;
    padding: 0.5rem;
 
    .headerLabel {
-      font-weight: 600;
-      font-size: 1rem;
+      font-weight: 700;
+      font-size: 0.75rem;
    }
 }
 
@@ -35,7 +36,8 @@
    flex-direction: column;
 
    .contentItem {
+      font-size: 0.85rem;
       border-bottom: 1px solid $light-gray-color;
-      padding: 1rem;
+      padding: 0.9rem;
    }
 }

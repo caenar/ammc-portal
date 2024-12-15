@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./Curriculum.module.scss";
-import { TbCircleCheckFilled, TbEdit, TbPlus } from "react-icons/tb";
+import { TbCircleCheckFilled, TbEdit, TbInfoCircle, TbPlus } from "react-icons/tb";
 
 import Layout from "components/Layout/Layout";
 import Loading from "components/Loading/Loading";
@@ -12,10 +12,14 @@ import { MessageWarning } from "components/ui/Message/MessageWarning";
 
 import { usePopupAlert } from "hooks";
 import useFetchData from "hooks/useFetchData";
+import Table from "components/Table/Table";
+import { formatCurrency } from "utils/formatCurrency";
+import IconSizes from "constants/IconSizes";
 
 const Curriculum = () => {
   const [state, setState] = useState({
     currentStep: 1,
+    currentMode: "base",
     successType: null,
     selectedProgram: null,
     programData: null,
@@ -44,26 +48,25 @@ const Curriculum = () => {
   ];
 
   const handleSelectProgram = (program) => {
+    console.log(program);
+
     const programCurriculums = curriculums.filter(
       (curriculum) => curriculum.programId === program._id
     );
 
-    const isSameProgram = state.selectedProgram === program;
-    updateState("selectedProgram", isSameProgram ? null : program);
-    updateState("programData", isSameProgram ? null : program);
-    updateState("curriculumData", isSameProgram ? [] : programCurriculums);
-    updateState("currentMode", programCurriculums.length ? "base" : "create");
+    updateState("selectedProgram", program);
+    updateState("programData", program);
+    updateState("curriculumData", programCurriculums);
+
+    handleNextStep();
   };
 
   const handleNextStep = () => {
-    if (!state.selectedProgram) {
-      setShowPopup(true);
-      showError("No program selected", "Please select a program from the list.");
-      return;
-    }
     updateState(
       "currentStep",
-      state.currentStep === 1 && state.currentMode === "create" ? 3 : state.currentStep + 1
+      state.currentStep === 1 && state.currentMode === "create"
+        ? 3
+        : state.currentStep + 1
     );
   };
 
@@ -91,34 +94,104 @@ const Curriculum = () => {
     handleNextStep();
   };
 
-  const YearCard = ({ yearIndex }) => (
-    <div className={styles.curriculumCard}>
-      <div className={styles.yearInfo}>
-        <p className={styles.badge}>
-          {["First Year", "Second Year", "Third Year", "Fourth Year", "Fifth Year"][yearIndex]}
-        </p>
-        <p className={styles.yearDescription}>
-          {
-            [
-              "Introduction to foundational subjects and core principles.",
-              "Building on fundamentals with intermediate coursework.",
-              "Advanced topics and specialized courses.",
-              "Practical experience, research, and capstone projects.",
-              "Finalizing expertise and preparing for graduation.",
-            ][yearIndex]
-          }
-        </p>
+  const YearCard = ({ yearIndex, programDetails }) => {
+    const yearData = [
+      {
+        title: "First Year",
+        description: "Introduction to foundational subjects and core principles.",
+        courses: 5,
+        summerClass: false,
+        semesterBreakdown: "2 semesters",
+        programNotes: "General education courses.",
+      },
+      {
+        title: "Second Year",
+        description: "Building on fundamentals with intermediate coursework.",
+        courses: 6,
+        summerClass: true,
+        semesterBreakdown: "2 semesters",
+        programNotes: "Opportunity for summer classes in subjects.",
+      },
+      {
+        title: "Third Year",
+        description: "Advanced topics and specialized courses to enhance.",
+        courses: 7,
+        summerClass: false,
+        semesterBreakdown: "2 semesters",
+        programNotes: "Specialized coursework with internships.",
+      },
+      {
+        title: "Fourth Year",
+        description: "Practical experience, research, and capstone projects.",
+        courses: 4,
+        summerClass: false,
+        semesterBreakdown: "2 semesters",
+        programNotes: "Capstone project or internship required.",
+      },
+      {
+        title: "Fifth Year",
+        description: "Finalizing expertise and preparing for graduation.",
+        courses: 3,
+        summerClass: true,
+        semesterBreakdown: "2 semesters",
+        programNotes: "Final thesis or graduation project, plus career prep workshops.",
+      },
+    ];
+
+    const { title, description, courses, summerClass, programNotes } =
+      yearData[yearIndex];
+
+    return (
+      <div className={styles.curriculumCard}>
+        <div className={styles.container}>
+          <div className={styles.yearTitle}>
+            <p className={styles.badge}>{title}</p>
+            <p className={styles.yearDescription}>{description}</p>
+          </div>
+          <div className={styles.yearDetails}>
+            <div className={styles.line}></div>
+            <h4>{courses} courses</h4>
+            <p>
+              {summerClass ? "Summer classes available" : "No summer classes available"}
+            </p>
+            <div className={`${styles.iconLabel} ${styles.desc}`}>
+              <TbInfoCircle size={IconSizes.SMALL} />
+              <p>{programNotes}</p>
+            </div>
+          </div>
+        </div>
       </div>
+    );
+  };
+
+  const yearLabels = {
+    1: "First year",
+    2: "Second year",
+    3: "Third year",
+    4: "Fourth year",
+    5: "Fifth year",
+  };
+
+  const CurriculumSection = ({ title, data, yearLevel, semester }) => (
+    <div className={styles.curriculumInfo}>
+      <h2>{title}</h2>
+      <p className={styles.desc}>
+        {yearLabels[yearLevel]} - Semester {semester}
+      </p>
+      <CourseTable curriculumData={data} courses={courses} users={users} />
     </div>
   );
 
-  const CurriculumSection = ({ title, desc, data }) => (
-    <>
-      <h2 className={styles.title}>{title}</h2>
-      <p className={styles.desc}>{desc}</p>
-      <CourseTable curriculumData={data} courses={courses} users={users} />
-    </>
-  );
+  const renderData = (data) => {
+    return (
+      <>
+        <p className={styles.badge}>{data.code}</p>
+        <p>{data.description}</p>
+        <p>{formatCurrency(data.fees[0].tuitionFee + data.fees[1].tuitionFee)}</p>
+        <p>{data.duration} years</p>
+      </>
+    );
+  };
 
   return (
     <Layout role="admin" pageName="Curriculum">
@@ -141,24 +214,20 @@ const Curriculum = () => {
                 />
               )}
               <div className={styles.selectProgram}>
-                <div className={styles.programsList}>
-                  {programs.map((program) => (
-                    <div
-                      className={`${styles.programCard} ${
-                        state.selectedProgram?.code === program?.code ? styles.active : ""
-                      }`}
-                      onClick={() => handleSelectProgram(program)}
-                      key={program.code}
-                    >
-                      <h3>{program.description}</h3>
-                      <p className={styles.badge}>{program.code}</p>
-                    </div>
-                  ))}
-                </div>
+                <Table
+                  data={programs}
+                  headers={["Code", "Name", "Tuition fee (per year)", "Duration"]}
+                  gridTemplateColumns="150px 1fr 350px 350px"
+                  isSingleObject={true}
+                  content={renderData}
+                  items={10}
+                  clickable={true}
+                  clickableAction={handleSelectProgram}
+                  tools={false}
+                  actionBtn={false}
+                  checkbox={false}
+                />
               </div>
-              <button onClick={handleNextStep} className={styles.primaryBtn}>
-                Next step
-              </button>
             </>
           )}
           {state.currentStep === 2 && state.currentMode === "base" && (
@@ -167,16 +236,10 @@ const Curriculum = () => {
                 <h2 className={styles.title}>Overview</h2>
                 <div className={styles.buttonContainer}>
                   <button
-                    onClick={() => handleSetMode("create")}
+                    onClick={() => handleSetMode("edit")}
                     className={`${styles.iconBtn} ${styles.primaryBtn}`}
                   >
-                    <TbPlus size={20} /> Create curriculum
-                  </button>
-                  <button
-                    onClick={() => handleSetMode("edit")}
-                    className={`${styles.iconBtn} ${styles.secondaryBtn}`}
-                  >
-                    <TbEdit size={20} /> Edit curriculum
+                    <TbEdit size={20} /> Manage curriculum
                   </button>
                 </div>
               </div>
@@ -191,14 +254,20 @@ const Curriculum = () => {
                     {
                       title: "Core courses",
                       desc: "Mandatory courses essential to the field.",
+                      yearLevel: curriculum.yearLevel,
+                      semester: curriculum.semester,
                       data: curriculum.coreCourses,
                     },
                     {
                       title: "Elective courses",
                       desc: "Courses for exploring additional interests.",
+                      yearLevel: curriculum.yearLevel,
+                      semester: curriculum.semester,
                       data: curriculum.electiveCourses,
                     },
-                  ].map((section, index) => <CurriculumSection key={index} {...section} />)
+                  ].map((section, index) => (
+                    <CurriculumSection key={index} {...section} />
+                  ))
                 )}
               </div>
             </div>

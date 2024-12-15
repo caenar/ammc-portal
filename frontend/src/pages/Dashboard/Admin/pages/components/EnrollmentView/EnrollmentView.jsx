@@ -1,7 +1,7 @@
 import React from "react";
-import styles from "./EnrollmentView.module.scss";
 
 import Table from "components/Table/Table";
+import { formatDate } from "utils/formatDate";
 
 export const EnrollmentView = ({
   type,
@@ -14,6 +14,8 @@ export const EnrollmentView = ({
   popupContent,
   handleNextStep,
 }) => {
+  console.log(data);
+  
 
   return type === "student" ? (
     <Table
@@ -31,6 +33,7 @@ export const EnrollmentView = ({
       content={renderData}
       onExport={onExport}
       onDelete={onDelete}
+      isSingleObject={false}
       isPopupVisible={isPopupVisible}
       setIsPopupVisible={setIsPopupVisible}
       popupContent={popupContent}
@@ -52,16 +55,10 @@ export const EnrollmentView = ({
         { label: "Name", attribute: "firstName" },
         { label: "Username", attribute: "username" },
       ]}
-      // content={(data) => (
-      // <>
-      //   <p>{data.name}</p>
-      //   <p>{data.programId}</p>
-      //   <p>{data.curriculumId}</p>
-      //   <p>{formatDate(data.createdAt)}</p>
-      // </>
-      // )}
+      content={renderData}
       onExport={onExport}
       onDelete={onDelete}
+      isSingleObject={false}
       popupContent={popupContent}
       isPopupVisible={isPopupVisible}
       setIsPopupVisible={setIsPopupVisible}

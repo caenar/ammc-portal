@@ -65,7 +65,7 @@ export const Header = () => {
               <TbBell size={23} strokeWidth={1.7} />
             </button>
             <div className={styles.userContainer} onClick={togglePopupUser}>
-              <UserIcon image={getUserPhoto(user.userPhoto)} size={35} />
+              <UserIcon image={user.userPhoto} size={35} />
             </div>
           </div>
         </header>
@@ -73,9 +73,7 @@ export const Header = () => {
         <Popup show={isPopupVisibleUser} close={closePopupUser} position={popupUserPosition}>
           <div className={styles.popupWrapperUser}>
             <div className={styles.userContainer}>
-              <div className={styles.userIcon}>
-                <img src={getUserPhoto(user.userPhoto)} alt="Your Profile Icon" />
-              </div>
+              <UserIcon image={user.userPhoto} size={42}/>
               <div className={styles.userName}>
                 <h3 className={styles.name}>
                   {user.firstName} {user.lastName}

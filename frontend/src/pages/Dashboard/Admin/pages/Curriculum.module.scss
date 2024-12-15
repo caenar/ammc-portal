@@ -29,127 +29,63 @@
   }
 }
 
-.selectProgram {
-  display: grid;
-  gap: 1rem;
-
-  .info {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    grid-row-start: 2;
-
-    .title {
-      font-size: 1.8rem;
-    }
-  }
-
-  .programsList {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 0.5rem;
-
-    .programCard {
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      background-color: white;
-      border: 1px solid $light-gray-color;
-      border-radius: $small-radius;
-      padding: 1rem;
-      gap: 1rem;
-      transition: 300ms $trans-fast;
-
-      &:hover {
-        border: 1px solid $light-primary-text;
-      }
-
-      &.active {
-        background-color: $light-green-color-100;
-        border-color: $light-green-color-300;
-
-        .badge {
-          border-color: $light-green-color-300;
-        }
-
-        .line {
-          background-color: $light-green-color-300;
-        }
-      }
-
-      h3 {
-        font-weight: 500;
-      }
-
-      .badge {
-        font-size: 0.8rem;
-        justify-self: start;
-        align-self: end;
-      }
-    }
-  }
-}
-
-.programInfo {
-  h1 {
-    text-wrap: balance;
-    font-size: 2.3rem;
-    max-width: 30ch;
-    margin-bottom: 0.7rem;
-  }
-
-  .breadcrumbContainer {
-    display: flex;
-    gap: 0.5rem;
-    opacity: 0.6;
-    font-size: small;
-    margin-bottom: 2rem;
-  }
-}
-
 .editWrapper {
   display: grid;
   gap: 2rem;
 
-  .buttonContainer {
-    justify-self: flex-end;
-  }
-
   .summaryContainer {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
 
     .curriculumCard {
       border: 1px solid $light-gray-color;
       border-radius: $small-radius;
       padding: 1rem;
 
-      .yearInfo {
+      .container {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+      }
+
+      .yearTitle {
+        display: grid;
         gap: 0.5rem;
+      }
+
+      .yearDetails {
+        .line {
+          margin: 10px 0;
+        }
+        .desc {
+          cursor: unset;
+          margin-top: 10px;
+          color: $light-gray-color-400;
+          align-items: start;
+          font-size: 0.85rem;
+          text-wrap: wrap;
+        }
       }
     }
   }
+}
 
-  .editContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+.curriculumInfo {
+  display: grid;
+  gap: 0.5rem;
+
+  .title {
+    margin: 0;
   }
 }
 
-.buttonContainer {
-  display: flex;
-  justify-self: end;
-  gap: 0.7rem;
-}
-
-.primaryBtn {
-  justify-self: end;
-  background-color: $light-green-color-300;
+.editContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: start;
+  gap: 1rem;
 }
 
 .success {

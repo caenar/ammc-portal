@@ -6,7 +6,7 @@ import { getUserPhoto } from "utils/getUserPhoto";
 export const UserContainer = ({ user, size }) => {
   return (
     <div className={styles.userContainer}>
-      <UserIcon image={getUserPhoto(user.userPhoto)} size={size} />
+      <UserIcon image={user.userPhoto} size={size} />
       <div>
         <h3 className={styles.title}>
           {user.firstName} {user.lastName}

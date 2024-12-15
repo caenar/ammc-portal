@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./UserIcon.module.scss";
+import { getUserPhoto } from "utils/getUserPhoto";
 
 export const UserIcon = ({
   image,
@@ -74,7 +75,7 @@ export const UserIcon = ({
     </>
   ) : (
     <div className={styles.userIcon} style={{ width: size, height: size }}>
-      <img src={image} alt={desc} />
+      <img src={getUserPhoto(image)} alt={desc} />
     </div>
   );
 };

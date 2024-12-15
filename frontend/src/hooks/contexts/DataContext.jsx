@@ -32,7 +32,7 @@ export const useDataContext = (endpoint, id = null) => {
     url = endpoint;
     endpointId = id;
   }
-
+  
   return {
     dataState: data || [],
     loadingState: loading || false,

@@ -23,6 +23,8 @@ const ManageCurriculum = ({
   const [selectedCores, setSelectedCores] = useState([]);
   const [selectedElectives, setSelectedElectives] = useState([]);
   const [selectedCurriculum, setSelectedCurriculum] = useState(null);
+  const [selectedYearLevel, setSelectedYearLevel] = useState(null);
+  const [selectedSemester, setSelectedSemester] = useState(null);
   const [isFieldsNotEmpty, setIsFieldsNotEmpty] = useState(true);
   const [curriculumExists, setCurriculumExists] = useState(false);
   const [isSwitchOn, setIsSwitchOn] = useState(false);
@@ -32,15 +34,12 @@ const ManageCurriculum = ({
   const { updateData, loading: updateLoading } = useUpdateData();
   const loading = curriculumExists ? updateLoading : postLoading;
 
-  const { register, handleSubmit, watch } = useForm({
+  const { handleSubmit } = useForm({
     defaultValues: {
       yearLevel: "",
       semester: "",
     },
   });
-
-  const yearLevel = watch("yearLevel");
-  const semester = watch("semester");
 
   const hasElectiveCourses = (curriculum) => curriculum?.electiveCourses?.length > 0;
 
@@ -62,7 +61,7 @@ const ManageCurriculum = ({
   }, [selectedCurriculum]);
 
   useEffect(() => {
-    if (yearLevel === "" || semester === "") {
+    if (selectedYearLevel === null || selectedSemester === null) {
       setIsFieldsNotEmpty(false);
       setSelectedCurriculum(null);
     } else {
@@ -70,8 +69,8 @@ const ManageCurriculum = ({
 
       const exists = curriculumData?.some(
         (curriculum) =>
-          curriculum.yearLevel === parseInt(yearLevel) &&
-          curriculum.semester === parseInt(semester)
+          curriculum.yearLevel === parseInt(selectedYearLevel?.value) &&
+          curriculum.semester === parseInt(selectedSemester?.value)
       );
 
       setCurriculumExists(exists);
@@ -79,8 +78,8 @@ const ManageCurriculum = ({
       if (exists) {
         const curriculum = curriculumData.find(
           (curriculum) =>
-            curriculum.yearLevel === parseInt(yearLevel) &&
-            curriculum.semester === parseInt(semester)
+            curriculum.yearLevel === parseInt(selectedYearLevel?.value) &&
+            curriculum.semester === parseInt(selectedSemester?.value)
         );
 
         if (curriculum) {
@@ -95,7 +94,13 @@ const ManageCurriculum = ({
         setSelectedElectives([]);
       }
     }
-  }, [yearLevel, semester, curriculumData, isFieldsNotEmpty, curriculumExists]);
+  }, [
+    curriculumData,
+    isFieldsNotEmpty,
+    curriculumExists,
+    selectedYearLevel,
+    selectedSemester,
+  ]);
 
   const resetElectiveCourses = () => {
     setClickCounts((prevCounts) => {
@@ -172,12 +177,12 @@ const ManageCurriculum = ({
         <h2>Year Level</h2>
         <FormSelect
           name="year"
-          value="yearLevel"
           options={Array.from({ length: programData.duration }, (_, index) => ({
             value: index + 1,
             label: `Year ${index + 1}`,
           }))}
-          register={register}
+          selectedData={selectedYearLevel}
+          setSelectedData={setSelectedYearLevel}
         />
       </div>
       <div className={styles.line}></div>
@@ -185,12 +190,12 @@ const ManageCurriculum = ({
         <h2>Semester</h2>
         <FormSelect
           name="semester"
-          value="semester"
           options={[
             { value: 1, label: "1st Semester" },
             { value: 2, label: "2nd Semester" },
           ]}
-          register={register}
+          selectedData={selectedSemester}
+          setSelectedData={setSelectedSemester}
         />
       </div>
       {!isFieldsNotEmpty ? (
@@ -227,7 +232,11 @@ const ManageCurriculum = ({
           Cancel
         </button>
         {isFieldsNotEmpty && (
-          <button type="button" onClick={handleSubmit(onSubmit)} className={styles.primaryBtn}>
+          <button
+            type="button"
+            onClick={handleSubmit(onSubmit)}
+            className={styles.primaryBtn}
+          >
             {curriculumExists ? "Save changes" : "Create curriculum"}
             {loading && <Loading />}
           </button>

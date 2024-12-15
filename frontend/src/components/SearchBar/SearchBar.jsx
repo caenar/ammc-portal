@@ -59,6 +59,8 @@ const SearchBar = ({
     const query = event.target.value;
     setSearchQuery(query);
 
+    console.log(query);
+
     clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(() => {
@@ -69,6 +71,8 @@ const SearchBar = ({
           )
         );
         setFilteredSuggestions(filteredSuggestions);
+        console.log(filteredSuggestions);
+
         onSearch(filteredSuggestions.map(({ original }) => original));
       } else {
         setFilteredSuggestions(processedData);

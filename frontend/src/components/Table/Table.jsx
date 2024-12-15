@@ -56,6 +56,7 @@ const Table = ({
   onEdit,
   onExport,
   onDelete,
+  items,
   actionBtn = true,
   tools = true,
   checkbox = true,
@@ -112,7 +113,7 @@ const Table = ({
 
   const [isHovered, setIsHovered] = useState(null);
 
-  const itemsPerPage = 8;
+  const itemsPerPage = items ? items : 8;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const containerStyle = tools ? {} : { width: "100%" };
@@ -541,14 +542,16 @@ const Table = ({
             {currentData.map((data, index) => (
               <div key={`${data._id}-${index}`}>
                 <div
-                  className={`${styles.tableItem} ${isHovered === index ? styles.hovered : ""}`}
+                  className={`${styles.tableItem} ${
+                    clickable && isHovered === index ? styles.hovered : ""
+                  }`}
                   style={{
                     ...(gridTemplateColumns
                       ? { gridTemplateColumns: gridTemplateColumns }
                       : { gridTemplateColumns: "40px 30% 1fr 1fr 1fr 50px" }),
                     ...(clickable ? { cursor: "pointer" } : null),
                   }}
-                  onClick={clickable && (() => clickableAction(data))}
+                  onClick={clickable ? () => clickableAction(data) : undefined}
                   onMouseEnter={() => setIsHovered(index)}
                   onMouseLeave={() => setIsHovered(-1)}
                 >

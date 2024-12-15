@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./Enrollment.module.scss";
 import { TbClock, TbMapPin, TbUser } from "react-icons/tb";
@@ -76,7 +75,6 @@ const Enrollment = () => {
     return courses.find((course) => course._id === courseId);
   };
 
-  // filter button actions
   const handleShowExportPopup = (user) => {
     setSelectedUser(user);
     setIsPopupVisible(false);
@@ -115,23 +113,64 @@ const Enrollment = () => {
     setSelectFileType(null);
   };
 
-  const groupedEnrollments = Object.values(
-    enrollments.reduce((acc, enrollment) => {
-      const { studentId, courseId, createdAt } = enrollment;
-      if (!acc[studentId]) {
-        acc[studentId] = {
-          studentId,
-          courses: [],
-          createdAt,
-        };
-      }
-      acc[studentId].courses.push(courseId);
-      return acc;
-    }, {})
-  );
+  const sectionMap = sections?.reduce((map, section) => {
+    if (!map[section.courseId]) {
+      map[section.courseId] = [];
+    }
+    map[section.courseId].push({
+      instructorId: section.instructorId,
+    });
+    return map;
+  }, {});
 
-  console.log(students)
-  console.log(groupedEnrollments)
+  const enrollmentMap = enrollments?.reduce((map, enrollment) => {
+    if (!map[enrollment.studentId]) {
+      map[enrollment.studentId] = [];
+    }
+
+    const instructors = sectionMap[enrollment.courseId] || [];
+
+    map[enrollment.studentId].push({
+      courseId: enrollment.courseId,
+      type: enrollment.type,
+      instructors,
+    });
+
+    return map;
+  }, {});
+
+  const groupedEnrollments = students
+    .map((student) => {
+      const {
+        firstName,
+        lastName,
+        userPhoto,
+        userId,
+        enrollmentStatus,
+        enrollmentDate,
+        programId,
+        yearLevel,
+      } = student;
+
+      const studentEnrollments = enrollmentMap[userId] || [];
+
+      return studentEnrollments.length > 0
+        ? {
+            student: {
+              firstName,
+              lastName,
+              userPhoto,
+              userId,
+              enrollmentStatus,
+              enrollmentDate,
+              programId,
+              yearLevel,
+            },
+            enrollments: studentEnrollments,
+          }
+        : null;
+    })
+    .filter(Boolean);
 
   const courseMap = useMemo(() => {
     return courses.reduce((map, course) => {
@@ -151,6 +190,9 @@ const Enrollment = () => {
     [selectedStudent, curriculums]
   );
 
+  const unenrolledStudents = students.filter((student) => !student.enrollmentStatus);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const allSelectedCourses = [...selectedCourses.core, ...selectedCourses.elective];
   const allSectionsSelected = allSelectedCourses.every(
     (courseId) => selectedSections[courseId] !== undefined
@@ -175,7 +217,10 @@ const Enrollment = () => {
       : [];
   }, [currentTimelineCourse, sections]);
 
-  const handleNextStep = () => {
+  const handleNextStep = (student) => {
+    if (currentStep === 2) {
+      setSelectedStudent(student);
+    }
     if (currentStep === 3) {
       setCurrentTimelineCourse(
         findCourse(selectedCourses.core[0] || selectedCourses.elective[0])
@@ -303,22 +348,42 @@ const Enrollment = () => {
   };
 
   const renderStudentData = (data) => {
-    const student = students.find((student) => student.userId === data.studentId);
-    const program = programs.find((program) => program._id === student?.programId);
+    const program = programs.find((program) => program._id === data.student?.programId);
 
     return (
-      student && (
+      data && (
         <>
-          <UserContainer user={student} size={48} />
+          <UserContainer user={data.student} size={48} />
           <p className={styles.role}>
-            {program?.code} - {student.yearLevel}
+            {program?.code} - {data.student.yearLevel}
           </p>
           <p className={styles.lastActive}>
-            {data.courses.length > 0
-              ? `${data.courses.length} courses enrolled`
+            {data.enrollments.length > 0
+              ? `${data.enrollments.length} courses enrolled`
               : "No courses enrolled"}
           </p>
-          <p className={styles.createdAt}>{formatDate(student.enrollmentDate)}</p>
+          <p className={styles.createdAt}>{formatDate(data.student.enrollmentDate)}</p>
+        </>
+      )
+    );
+  };
+
+  const renderCourseData = (data) => {
+    const program = programs.find((program) => program._id === data.student?.programId);
+
+    return (
+      data && (
+        <>
+          <UserContainer user={data.student} size={48} />
+          <p className={styles.role}>
+            {program?.code} - {data.student.yearLevel}
+          </p>
+          <p className={styles.lastActive}>
+            {data.enrollments.length > 0
+              ? `${data.enrollments.length} courses enrolled`
+              : "No courses enrolled"}
+          </p>
+          <p className={styles.createdAt}>{formatDate(data.student.enrollmentDate)}</p>
         </>
       )
     );
@@ -331,13 +396,6 @@ const Enrollment = () => {
       data && (
         <>
           <UserContainer user={data} size={48} />
-          <p
-            className={`${styles.badge} ${
-              data.enrollmentStatus ? styles.greenBadge : styles.redBadge
-            }`}
-          >
-            {data.enrollmentStatus ? "Enrolled" : "Not enrolled"}
-          </p>
           <p className={styles.role}>
             {program?.code} - {data.yearLevel}
           </p>
@@ -420,8 +478,8 @@ const Enrollment = () => {
       content: (
         <EnrollmentView
           type="course"
-          data={enrollments}
-          renderData={renderStudentData}
+          data={groupedEnrollments}
+          renderData={renderCourseData}
           onExport={handleShowExportPopup}
           onDelete={handleShowDeleteConfirmation}
           isPopupVisible={isPopupVisible}
@@ -451,9 +509,10 @@ const Enrollment = () => {
           {currentStep === 2 && (
             <div className={styles.selectStudentWrapper}>
               <Table
-                data={students}
-                headers={["Name", "Status", "Program & Year"]}
-                gridTemplateColumns="500px 1fr 400px"
+                data={unenrolledStudents}
+                headers={["Name", "Program & Year"]}
+                gridTemplateColumns="1fr 1fr"
+                isSingleObject={false}
                 content={renderStudentDataSearch}
                 clickable={true}
                 clickableAction={handleNextStep}

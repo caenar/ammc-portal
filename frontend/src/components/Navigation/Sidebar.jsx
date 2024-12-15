@@ -207,7 +207,7 @@ export const Sidebar = ({ role }) => {
                   Grade Management
                 </button>
               </Link>
-              <Link
+              {/* <Link
                 to="/instructor/dashboard/calendar"
                 className={styles.itemBtn}
                 onClick={() => handleTabClick("calendar")}
@@ -219,7 +219,7 @@ export const Sidebar = ({ role }) => {
                   <TbCalendarEvent size={ICON_SIZE} />
                   Calendar
                 </button>
-              </Link>
+              </Link> */}
             </div>
           </div>
         );

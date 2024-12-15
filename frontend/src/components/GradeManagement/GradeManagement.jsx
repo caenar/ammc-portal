@@ -298,7 +298,7 @@ const GradeManagement = () => {
                 </div>
               </div>
             </section>
-            {loggedInUser === "admin" && (
+            {role === "admin" && (
               <section className={styles.requestsContent}>
                 <div>
                   <h3 className={styles.title}>Requests</h3>

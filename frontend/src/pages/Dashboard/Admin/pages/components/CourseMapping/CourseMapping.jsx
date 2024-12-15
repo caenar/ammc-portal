@@ -15,7 +15,7 @@ const CourseMapping = ({
   isFieldsNotEmpty,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 19;
+  const itemsPerPage = 14;
 
   const allCourseIds = useMemo(() => {
     const ids = new Set();
